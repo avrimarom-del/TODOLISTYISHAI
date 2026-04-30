@@ -1,0 +1,14 @@
+# This covers node_modules in the root, client, and server folders
+**/node_modules/
+**/.vite/
+
+# This covers build folders in both
+**/dist/
+**/build/
+
+# Critical for security: ignore all .env files anywhere in the project
+**/.env
+**/.env.local
+
+# Logs
+*.log
