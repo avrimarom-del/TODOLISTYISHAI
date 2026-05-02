@@ -1,9 +1,14 @@
 import type { Todo } from "../types/Todo";
-import { axoisInstance } from "./axios";
+import { axiosInstance } from "./axios";
 
 const getTodos = async (): Promise<Todo[]> => {
-  const res = await axoisInstance.get<Todo[]>("/todos");
+  const res = await axiosInstance.get<Todo[]>("/todos");
+  return res.data.data;
+};
+
+const createTodo = async (todo: Omit<Todo, "_id">) => {
+  const res = await axiosInstance.post<Todo>("/todos", todo);
   return res.data;
 };
 
-export { getTodos };
+export { getTodos, createTodo };

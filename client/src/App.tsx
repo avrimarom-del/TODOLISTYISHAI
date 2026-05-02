@@ -13,18 +13,20 @@ const App = () => {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        setLoading(true); 
-        const resData = await getTodos()
-        setTodos(resData)
-      } catch (err) {
-        setError(err.message)
+        setLoading(true);
+        const resData = await getTodos();
+        setTodos(resData);
+      } catch (err: any) {
+        setError(err.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
+
+    fetchTodos();
   }, []);
 
-  const addTodo = (todo: Todo) => {  
+  const addTodo = (todo: Todo) => {
     setTodos((prevTodos) => [...prevTodos, todo]);
   };
 
@@ -37,11 +39,10 @@ const App = () => {
       prevTodos.map((todo) => (todo._id === todoId ? updatedTodo : todo)),
     );
   };
-
   return (
     <Stack>
       <TodoForm onAdd={addTodo} />
-      <TodoList todos={todos} onDelete={deleteTodo} onEdit={editTodo} />
+      <TodoList todos={todos} onDelete={deleteTodo} onEdit={editTodo} isLoading={loading} />
     </Stack>
   );
 };

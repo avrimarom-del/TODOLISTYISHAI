@@ -4,7 +4,7 @@ interface Todo {
   title: string;
   description?: string;
   completed: boolean;
-  priority: number;
+  priority: string;
 }
 
 export type { Todo };

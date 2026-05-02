@@ -1,5 +1,7 @@
-import { Typography, Card, CardContent, Button } from "@mui/material";
+import { Typography, Card, CardContent, Button, Stack } from "@mui/material";
 import type { Todo } from "../../types/Todo";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface TodoCardProps {
   todo: Todo;
@@ -17,7 +19,7 @@ const TodoCard = ({ todo, onDelete, onEdit }: TodoCardProps) => {
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
           {todo.description}
         </Typography>
-        <Typography variant="caption" display="block" sx={{ mb: 2 }}>
+        <Typography variant="caption" sx={{ mb: 2 }}>
           {todo.completed ? "Finished" : "Working on it"}
         </Typography>
         <Stack direction="row" spacing={2}>

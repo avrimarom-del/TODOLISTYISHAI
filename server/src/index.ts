@@ -1,18 +1,28 @@
 import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 import { todosRouter } from "./routes/todos.routes";
+import { usersRouter } from "./routes/users.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 import { responseTimer } from "./middlewares/timer.middleware";
 import { timeoutGuard } from "./middlewares/timeoutGuard.middleware";
 import { requestLogger } from "./middlewares/requestLogger.middleware";
-import dotenv from "dotenv";
 import { connectDB } from "./db/connectDB";
-import { usersRouter } from "./routes/users.routes";
 
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 connectDB();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 app.use(responseTimer);
