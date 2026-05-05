@@ -1,4 +1,11 @@
-import { Typography, Card, CardContent, Button, Stack } from "@mui/material";
+import {
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Stack,
+  Checkbox,
+} from "@mui/material";
 import type { Todo } from "../../types/Todo";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -10,6 +17,26 @@ interface TodoCardProps {
 }
 
 const TodoCard = ({ todo, onDelete, onEdit }: TodoCardProps) => {
+  const handleToggleStatus = () => {
+    const updatedData: Todo = {
+      ...todo,
+      completed: !todo.completed,
+    };
+    onEdit(todo._id, updatedData);
+  };
+  // const getPriorityColor = (priority: string) => {
+  //   switch (priority) {
+  //     case "high":
+  //       return "error";
+  //     case "medium":
+  //       return "warning";
+  //     case "low":
+  //       return "success";
+  //     default:
+  //       return "default";
+  //   }
+  // };
+
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
@@ -22,6 +49,7 @@ const TodoCard = ({ todo, onDelete, onEdit }: TodoCardProps) => {
         <Typography variant="caption" sx={{ mb: 2 }}>
           {todo.completed ? "Finished" : "Working on it"}
         </Typography>
+
         <Stack direction="row" spacing={2}>
           <Button
             variant="outlined"
@@ -40,6 +68,7 @@ const TodoCard = ({ todo, onDelete, onEdit }: TodoCardProps) => {
           >
             Edit
           </Button>
+          <Checkbox checked={todo.completed} onChange={handleToggleStatus} />
         </Stack>
       </CardContent>
     </Card>

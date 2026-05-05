@@ -1,14 +1,31 @@
 import type { Todo } from "../types/Todo";
 import { axiosInstance } from "./axios";
 
-const getTodos = async (): Promise<Todo[]> => {
+const apiGetTodos = async (): Promise<Todo[]> => {
   const res = await axiosInstance.get<Todo[]>("/todos");
   return res.data.data;
 };
 
-const createTodo = async (todo: Omit<Todo, "_id">) => {
+const apiCreateTodo = async (todo: Omit<Todo, "_id">) => {
   const res = await axiosInstance.post<Todo>("/todos", todo);
-  return res.data;
+  return res.data.data;
 };
 
-export { getTodos, createTodo };
+const apiEditTodo = async (id: string, todo: Todo) => {
+  const payload = {
+    title: todo.title,
+    description: todo.description,
+    completed: todo.completed,
+    priority: todo.priority,
+  };
+
+  const res = await axiosInstance.put<Todo>(`/todos/${id}`, payload);
+  return res.data.data;
+};
+
+const apiDeleteTodo = async (id: string) => {
+  const res = await axiosInstance.delete<Todo>("/todos/" + id);
+  return res.data.data;
+};
+
+export { apiEditTodo, apiCreateTodo, apiGetTodos, apiDeleteTodo };
