@@ -13,16 +13,16 @@ interface Page {
 
 const pages: Page[] = [
   {
-    path: "/todos",
-    label: "משימות",
-    visible: true,
-    element: <TodoPage />,
-  },
-  {
     path: "/",
     label: "בית",
     visible: true,
     element: <HomePage />,
+  },
+  {
+    path: "/todos",
+    label: "משימות",
+    visible: true,
+    element: <TodoPage />,
   },
   {
     path: "*",
