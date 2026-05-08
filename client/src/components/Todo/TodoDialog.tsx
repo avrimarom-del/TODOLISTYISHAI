@@ -1,106 +1,119 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   TextField,
   Button,
-  CircularProgress,
-  FormControlLabel,
-  Checkbox,
   MenuItem,
+  Stack,
 } from "@mui/material";
-import type { Todo } from "../../types/Todo";
-import { apiCreateTodo } from "../../api/todos";
+import type { Todo, TodoFormData } from "../../types/Todo";
 
 interface TodoDialogProps {
-  onAdd: (todo: Todo) => void;
+  open: boolean;
+  onClose: () => void;
+  onSave: (data: TodoFormData) => Promise<void>;
+  initialData: Todo | null;
 }
 
-const TodoDialog = ({ onAdd }: TodoDialogProps) => {
-  const [textTitle, setTextTitle] = useState("");
-  const [textDescription, setTextDescription] = useState("");
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [priority, setPriority] = useState("medium");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const TodoDialog = ({
+  open,
+  onClose,
+  onSave,
+  initialData,
+}: TodoDialogProps) => {
+  // 1. LOCAL "DRAFT" STATE
+  const [formData, setFormData] = useState<TodoFormData>({
+    title: "",
+    description: "",
+    priority: "medium",
+  });
 
-  const handleClick = async () => {
-    if (!textTitle.trim() || isSubmitting) return;
+  useEffect(() => {
+    if (open) {
+      if (initialData) {
+        // Load existing data for Editing
+        setFormData({
+          title: initialData.title,
+          description: initialData.description || "",
+          priority: initialData.priority as "low" | "medium" | "high",
+        });
+      } else {
+        // Reset for Creating
+        setFormData({ title: "", description: "", priority: "medium" });
+      }
+    }
+  }, [open, initialData]);
 
-    setIsSubmitting(true);
-
-    try {
-      console.log("Dialog state - isCompleted:", isCompleted);
-      const newTodo = await apiCreateTodo({
-        title: textTitle,
-        description: textDescription,
-        completed: isCompleted,
-        userId: "69ed222338f3d85b4f5bdb39",
-        priority: priority,
-      });
-
-      onAdd(newTodo);
-      setTextTitle("");
-      setTextDescription("");
-      setIsCompleted(false);
-      setPriority("medium");
-    } catch (err) {
-      console.error("Failed to add:", err);
-      // Mission: Later we can set an error state here for an MUI Alert
-    } finally {
-      setIsSubmitting(false);
+  // 3. EVENT HANDLERS
+  const handleSave = () => {
+    if (formData.title.trim()) {
+      onSave(formData);
     }
   };
 
   return (
-    <Box sx={{ display: "grid", gap: 1, mb: 3 }}>
-      <TextField
-        label="New Task"
-        variant="outlined"
-        size="small"
-        fullWidth
-        value={textTitle}
-        disabled={isSubmitting}
-        onChange={(e) => setTextTitle(e.target.value)}
-      />
-      <TextField
-        label="description (Optional)"
-        variant="outlined"
-        size="small"
-        fullWidth
-        value={textDescription}
-        disabled={isSubmitting}
-        onChange={(e) => setTextDescription(e.target.value)}
-      />
-      <TextField
-        select
-        label="Priority"
-        value={priority}
-        size="small"
-        fullWidth
-        disabled={isSubmitting}
-        onChange={(e) => setPriority(e.target.value)}
-      >
-        <MenuItem value="low">Low</MenuItem>
-        <MenuItem value="medium">Medium</MenuItem>
-        <MenuItem value="high">High</MenuItem>
-      </TextField>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={isCompleted}
-            onChange={(e) => setIsCompleted(e.target.checked)}
-            disabled={isSubmitting}
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>
+        {initialData ? "Update Mission" : "Assign New Mission"}
+      </DialogTitle>
+
+      <DialogContent>
+        <Stack spacing={3} sx={{ mt: 1 }}>
+          {/* TITLE INPUT */}
+          <TextField
+            label="Title"
+            fullWidth
+            required
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
           />
-        }
-        label="completed"
-      />
-      <Button
-        variant="contained"
-        onClick={handleClick}
-        disabled={isSubmitting || !textTitle.trim()}
-      >
-        {isSubmitting ? <CircularProgress size={24} color="inherit" /> : "Add"}
-      </Button>
-    </Box>
+
+          {/* DESCRIPTION INPUT */}
+          <TextField
+            label="Description"
+            fullWidth
+            multiline
+            rows={3}
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+          />
+
+          {/* PRIORITY SELECT */}
+          <TextField
+            select
+            label="Priority"
+            value={formData.priority}
+            onChange={(e) =>
+              setFormData({ ...formData, priority: e.target.value as any })
+            }
+          >
+            <MenuItem value="low">Low</MenuItem>
+            <MenuItem value="medium">Medium</MenuItem>
+            <MenuItem value="high">High</MenuItem>
+          </TextField>
+        </Stack>
+      </DialogContent>
+
+      <DialogActions sx={{ p: 3 }}>
+        <Button onClick={onClose} color="inherit">
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          disabled={!formData.title.trim()}
+        >
+          {initialData ? "Update" : "Create"}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

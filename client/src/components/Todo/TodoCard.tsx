@@ -13,7 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 interface TodoCardProps {
   todo: Todo;
   onDelete: (id: string) => void;
-  onEdit: (id: string, todoData: Todo) => void;
+  onEdit: (todoData: Todo) => void;
 }
 
 const TodoCard = ({ todo, onDelete, onEdit }: TodoCardProps) => {
@@ -22,7 +22,7 @@ const TodoCard = ({ todo, onDelete, onEdit }: TodoCardProps) => {
       ...todo,
       completed: !todo.completed,
     };
-    onEdit(todo._id, updatedData);
+    onEdit(updatedData);
   };
   // const getPriorityColor = (priority: string) => {
   //   switch (priority) {
@@ -64,7 +64,7 @@ const TodoCard = ({ todo, onDelete, onEdit }: TodoCardProps) => {
             variant="contained"
             size="small"
             startIcon={<EditIcon />}
-            onClick={() => onEdit(todo._id, todo)}
+            onClick={() => onEdit(todo)}
           >
             Edit
           </Button>

@@ -7,4 +7,10 @@ interface Todo {
   priority: string;
 }
 
-export type { Todo };
+type TodoFormData = {
+  title: string;
+  description: string;
+  priority: "low" | "medium" | "high";
+};
+
+export type { Todo, TodoFormData };

@@ -6,7 +6,7 @@ import { TodoListSkeleton } from "../skeletons/TodoListSkeleton";
 interface TodoListProps {
   todos: Todo[];
   onDelete: (id: string) => void;
-  onEdit: (id: string, todoData: Todo) => void;
+  onEdit: (todo: Todo) => void;
   isLoading: boolean;
 }
 
