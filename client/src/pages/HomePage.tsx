@@ -1,6 +1,15 @@
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
 const HomePage = () => {
-  return <Typography variant="h1">Home page</Typography>;
+  const { user } = useAuth();
+  return (
+    <Box>
+      <Typography>
+        Logged in as: <b>{user?.username}</b>
+      </Typography>
+      <Typography variant="h1">Home page</Typography>
+    </Box>
+  );
 };
 
 export { HomePage };

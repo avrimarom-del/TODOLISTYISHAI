@@ -105,8 +105,10 @@ const updateTodo = async (id: string, todoData: Todo) => {
   if (!updatedTodo) {
     throw new HttpError("Todo not found", 404);
   }
-  console.log(updatedTodo);
-  return { ...updatedTodo, priority: priorityMap[updatedTodo.priority] };
+
+  const todoObj = updatedTodo.toObject();
+
+  return { ...todoObj, priority: priorityMap[todoObj.priority] };
 };
 export {
   getTodos,

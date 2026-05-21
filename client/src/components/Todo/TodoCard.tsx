@@ -10,6 +10,7 @@ import {
 import type { Todo } from "../../types/Todo";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { useAuth } from "../../context/AuthContext";
 
 interface TodoCardProps {
   todo: Todo;
@@ -24,6 +25,8 @@ const TodoCard = ({
   onEdit,
   onToggleCompleted,
 }: TodoCardProps) => {
+  const { user } = useAuth();
+
   const getPrioritycolor = (priority: string) => {
     switch (priority) {
       case "high":
@@ -36,6 +39,8 @@ const TodoCard = ({
         return "default";
     }
   };
+
+  const isAdmin = user?.role === "admin";
 
   return (
     <Card sx={{ mb: 2, opacity: todo.completed ? 0.7 : 1 }}>
@@ -70,50 +75,54 @@ const TodoCard = ({
           />
         </Stack>
 
-        {/* MIDDLE: Description */}
         {todo.description ? (
           <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
             {todo.description}
           </Typography>
         ) : (
-          <Typography
-            variant="caption"
-            sx={{
-              fontStyle: "italic",
-              color: "gray",
-              cursor: "pointer",
-              display: "block",
-              mb: 2,
-            }}
-            onClick={() => onEdit(todo)}
-          >
-            + add a description to this todo
-          </Typography>
+          isAdmin && (
+            <Typography
+              variant="caption"
+              sx={{
+                fontStyle: "italic",
+                color: "gray",
+                cursor: "pointer",
+                display: "block",
+                mb: 2,
+              }}
+              onClick={() => onEdit(todo)}
+            >
+              + add a description to this todo
+            </Typography>
+          )
         )}
 
-        {/* BOTTOM ROW: Actions (Left) and Completion (Right) */}
         <Stack
           direction="row"
           sx={{ justifyContent: "space-between", alignItems: "center" }}
         >
           <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              color="error"
-              size="small"
-              startIcon={<DeleteIcon />}
-              onClick={() => onDelete(todo._id)}
-            >
-              Delete
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<EditIcon />}
-              onClick={() => onEdit(todo)}
-            >
-              Edit
-            </Button>
+            {isAdmin && (
+              <>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => onDelete(todo._id)}
+                >
+                  Delete
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<EditIcon />}
+                  onClick={() => onEdit(todo)}
+                >
+                  Edit
+                </Button>
+              </>
+            )}
           </Stack>
 
           <Stack direction="row" sx={{ alignItems: "center" }}>
@@ -122,7 +131,10 @@ const TodoCard = ({
             </Typography>
             <Checkbox
               checked={todo.completed}
-              onChange={() => onToggleCompleted(todo)}
+              onChange={(event) => {
+                event.stopPropagation();
+                onToggleCompleted(todo);
+              }}
             />
           </Stack>
         </Stack>

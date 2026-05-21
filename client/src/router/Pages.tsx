@@ -1,4 +1,5 @@
 import { HomePage } from "../pages/HomePage";
+import { LoginPage } from "../pages/LoginPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { TodoPage } from "../pages/TodoPage";
 
@@ -23,6 +24,12 @@ const pages: Page[] = [
     label: "משימות",
     visible: true,
     element: <TodoPage />,
+  },
+  {
+    path: "/login",
+    label: "התחברות",
+    visible: true,
+    element: <LoginPage />,
   },
   {
     path: "*",

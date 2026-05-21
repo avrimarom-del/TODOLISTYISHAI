@@ -18,6 +18,8 @@ const createTodoSchema = z.object({
     .transform((v) => reversePriorityMap[v]),
 
   userId: objectIdSchema,
+
+  completed: z.boolean().default(false),
 });
 
 const updateTodoSchema = createTodoSchema.partial();

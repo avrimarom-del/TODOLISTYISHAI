@@ -11,7 +11,7 @@ const apiCreateTodo = async (todo: Omit<Todo, "_id">) => {
   return res.data;
 };
 
-const apiEditTodo = async (id: string, todo: Todo) => {
+const apiEditTodo = async (id: string, todo: Partial<Todo>) => {
   const payload = {
     title: todo.title,
     description: todo.description,
