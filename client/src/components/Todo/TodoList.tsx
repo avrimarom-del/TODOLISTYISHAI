@@ -7,26 +7,36 @@ interface TodoListProps {
   todos: Todo[];
   onDelete: (id: string) => void;
   onEdit: (todo: Todo) => void;
-  isLoading: boolean;
+  isLoading?: boolean;
+  onToggleCompleted: (todo: Todo) => void;
 }
 
-const TodoList = ({ todos, onDelete, onEdit, isLoading }: TodoListProps) =>
-  isLoading ? (
-    <TodoListSkeleton />
-  ) : (
-    <Stack
-      spacing={2}
-      sx={{ width: "100%", maxWidth: "500px", margin: "0 auto" }}
-    >
+const TodoList = ({
+  todos,
+  onDelete,
+  onEdit,
+  isLoading,
+  onToggleCompleted,
+}: TodoListProps) => {
+  if (todos.length < 0) {
+    throw new Error("boundery test: the list crushed successfully");
+  }
+
+  if (isLoading) return <TodoListSkeleton />;
+
+  return (
+    <Stack>
       {todos.map((todo) => (
         <TodoCard
           todo={todo}
           key={todo._id}
           onDelete={onDelete}
           onEdit={onEdit}
+          onToggleCompleted={onToggleCompleted}
         />
       ))}
     </Stack>
   );
+};
 
 export { TodoList };

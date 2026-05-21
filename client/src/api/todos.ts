@@ -8,7 +8,7 @@ const apiGetTodos = async (): Promise<Todo[]> => {
 
 const apiCreateTodo = async (todo: Omit<Todo, "_id">) => {
   const res = await axiosInstance.post<Todo>("/todos", todo);
-  return res.data.data;
+  return res.data;
 };
 
 const apiEditTodo = async (id: string, todo: Todo) => {
@@ -17,15 +17,15 @@ const apiEditTodo = async (id: string, todo: Todo) => {
     description: todo.description,
     completed: todo.completed,
     priority: todo.priority,
-  };
+  }
 
   const res = await axiosInstance.put<Todo>(`/todos/${id}`, payload);
-  return res.data.data;
+  return res.data;
 };
 
 const apiDeleteTodo = async (id: string) => {
   const res = await axiosInstance.delete<Todo>("/todos/" + id);
-  return res.data.data;
+  return res.data;
 };
 
 export { apiEditTodo, apiCreateTodo, apiGetTodos, apiDeleteTodo };

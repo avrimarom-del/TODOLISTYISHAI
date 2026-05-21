@@ -36,9 +36,9 @@ const TodoDialog = ({
       if (initialData) {
         // Load existing data for Editing
         setFormData({
-          title: initialData.title,
+          title: initialData.title || "",
           description: initialData.description || "",
-          priority: initialData.priority as "low" | "medium" | "high",
+          priority: initialData.priority || "medium",
         });
       } else {
         // Reset for Creating
@@ -49,7 +49,7 @@ const TodoDialog = ({
 
   // 3. EVENT HANDLERS
   const handleSave = () => {
-    if (formData.title.trim()) {
+    if (formData.title && formData.title.trim().length > 0) {
       onSave(formData);
     }
   };
@@ -73,7 +73,6 @@ const TodoDialog = ({
             }
           />
 
-          {/* DESCRIPTION INPUT */}
           <TextField
             label="Description"
             fullWidth
@@ -85,9 +84,9 @@ const TodoDialog = ({
             }
           />
 
-          {/* PRIORITY SELECT */}
           <TextField
             select
+            required
             label="Priority"
             value={formData.priority}
             onChange={(e) =>

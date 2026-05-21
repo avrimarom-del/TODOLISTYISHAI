@@ -4,7 +4,7 @@ interface Todo {
   title: string;
   description?: string;
   completed: boolean;
-  priority: string;
+  priority: "low" | "medium" | "high";
 }
 
 type TodoFormData = {

@@ -1,14 +1,17 @@
 import { Routes, Route } from "react-router-dom";
 import { pages } from "./Pages";
+import { MainLayout } from "../components/layout/MainLayout";
+
 const Router = () => {
   return (
     <Routes>
-      {pages.map((page) => (
-        // לשנות ל key
-        <Route path={page.path} element={page.element} />
-      ))}
+      <Route element={<MainLayout />}>
+        {pages.map((page) => (
+          <Route path={page.path} element={page.element} />
+        ))}
+      </Route>
     </Routes>
   );
 };
-
+  
 export { Router };

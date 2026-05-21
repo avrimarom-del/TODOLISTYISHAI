@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
-// Added Button and Typography to imports
-import { Stack, Button, Typography, CircularProgress } from "@mui/material";
+import { ErrorBoundary } from "react-error-boundary";
+import {
+  Stack,
+  Button,
+  Typography,
+  CircularProgress,
+  Box,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+
+import { ErrorFallback } from "../components/common/ErrorFallback";
 import { TodoList } from "../components/Todo/TodoList";
 import { TodoDialog } from "../components/Todo/TodoDialog";
 import type { Todo } from "../types/Todo";
@@ -10,28 +19,31 @@ import {
   apiEditTodo,
   apiDeleteTodo,
 } from "../api/todos";
+import { useTodos } from "../hooks/useTodos";
 
 const TodoPage = () => {
+  const { getTodosQuery } = useTodos();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [todoToEdit, setTodoToEdit] = useState<Todo | null>(null);
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        setLoading(true);
-        const resData = await apiGetTodos();
-        setTodos(resData);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTodos();
-  }, []);
+  // const fetchTodos = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const resData = await apiGetTodos();
+  //     setTodos(resData);
+  //   } catch (err: any) {
+  //     setError(err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchTodos();
+  // }, []);
 
   const onOpenCreate = () => {
     setTodoToEdit(null);
@@ -51,14 +63,10 @@ const TodoPage = () => {
   const onSaveTodo = async (formData: any) => {
     try {
       if (todoToEdit) {
-        const updatedTodo = await apiEditTodo(todoToEdit._id, {
-          ...todoToEdit,
-          ...formData,
-        });
+        const updatedData = { ...todoToEdit, ...formData };
+        const res = await apiEditTodo(todoToEdit._id, updatedData);
         setTodos((prev) =>
-          prev.map((todo) =>
-            todo._id === todoToEdit._id ? updatedTodo : todo,
-          ),
+          prev.map((todo) => (todo._id === todoToEdit._id ? res : todo)),
         );
       } else {
         const newTodo = await apiCreateTodo({
@@ -70,7 +78,6 @@ const TodoPage = () => {
       }
       onCloseDialog();
     } catch (err) {
-      console.error("Save failed:", err);
       setError("Failed to save changes.");
     }
   };
@@ -78,23 +85,48 @@ const TodoPage = () => {
   const deleteTodo = async (todoId: string) => {
     try {
       await apiDeleteTodo(todoId);
-      setTodos((prevTodos) => prevTodos.filter((t) => t._id !== todoId));
-    } catch (err) {
-      console.error("Failed to sync the delete to the server:", err);
+      setTodos((prev) => prev.filter((t) => t._id !== todoId));
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const toggleCompleted = async (todo: Todo) => {
+    try {
+      const updatedData = { ...todo, completed: !todo.completed };
+      const res = await apiEditTodo(todo._id, updatedData);
+      setTodos((prev) => prev.map((t) => (t._id === todo._id ? res : t)));
+    } catch (err: any) {
+      setError(err.message);
     }
   };
 
   return (
-    <Stack spacing={2} sx={{ p: 4 }}>
-      {error && <Typography color="error">{error}</Typography>}
-
-      <Button
-        variant="contained"
-        onClick={onOpenCreate}
-        sx={{ alignSelf: "flex-start" }}
+    <Stack spacing={4} sx={{ p: 4, maxWidth: "800px", margin: "0 auto" }}>
+      {error && (
+        <Typography color="error" sx={{ textAlign: "center" }}>
+          {error}
+        </Typography>
+      )}
+      <Stack
+        direction="row"
+        sx={{ justifyContent: "space-between", alignItems: "center" }}
       >
-        Add New Task
-      </Button>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{ fontWeight: "bold", color: "primary.main" }}
+        >
+          Mission Control
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={onOpenCreate}
+        >
+          Add New Task
+        </Button>
+      </Stack>
 
       <TodoDialog
         open={isDialogOpen}
@@ -103,16 +135,24 @@ const TodoPage = () => {
         onClose={onCloseDialog}
       />
 
-      {loading ? (
-        <CircularProgress sx={{ alignSelf: "center" }} />
-      ) : (
-        <TodoList
-          todos={todos}
-          onDelete={deleteTodo}
-          onEdit={onOpenEdit}
-          isLoading={loading}
-        />
-      )}
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}
+        // onReset={() => fetchTodos()}
+      >
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <TodoList
+            todos={getTodosQuery.data || []}
+            onDelete={deleteTodo}
+            onEdit={onOpenEdit}
+            onToggleCompleted={toggleCompleted}
+            isLoading={loading}
+          />
+        )}
+      </ErrorBoundary>
     </Stack>
   );
 };

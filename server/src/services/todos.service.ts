@@ -66,7 +66,6 @@ const getTodoById = async (id: string) => {
   return todoById;
 };
 
-// errorMiddleware works
 const createTodo = async (todo: Todo) => {
   const userExsists = await UserModel.findById(todo.userId);
 
@@ -76,7 +75,14 @@ const createTodo = async (todo: Todo) => {
       404,
     );
   }
-  return await TodoModel.create(todo);
+
+  const newTodo = await TodoModel.create(todo);
+  const todoObj = newTodo.toObject();
+  return {
+    ...todoObj,
+    priority:
+      priorityMap[todoObj.priority as keyof typeof priorityMap] || "medium",
+  };
 };
 
 // errorMiddleware works
@@ -99,8 +105,8 @@ const updateTodo = async (id: string, todoData: Todo) => {
   if (!updatedTodo) {
     throw new HttpError("Todo not found", 404);
   }
-
-  return updatedTodo;
+  console.log(updatedTodo);
+  return { ...updatedTodo, priority: priorityMap[updatedTodo.priority] };
 };
 export {
   getTodos,
